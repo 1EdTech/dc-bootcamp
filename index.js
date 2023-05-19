@@ -1,11 +1,12 @@
 import jsigs from 'jsonld-signatures';
 const {purposes: {AssertionProofPurpose}} = jsigs;
-import {Ed25519VerificationKey2020} from
-  '@digitalbazaar/ed25519-verification-key-2020';
-import {Ed25519Signature2020, suiteContext} from
-  '@digitalbazaar/ed25519-signature-2020';
 import {securityLoader} from '@digitalbazaar/security-document-loader';
-import ed25519Context2020 from 'ed25519-signature-2020-context';
+import * as Ed25519Multikey from '@digitalbazaar/ed25519-multikey';
+import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
+import {cryptosuite as eddsa2022CryptoSuite} from
+  '@digitalbazaar/eddsa-2022-cryptosuite';
+import dataIntegrity from '@digitalbazaar/data-integrity-context';
+
 
 import context   from './context.js';
 
@@ -14,7 +15,7 @@ const unsignedCredential = {
     '@context': [
       "https://www.w3.org/2018/credentials/v1",
       "https://purl.imsglobal.org/spec/ob/v3p0/context/ob_v3p0.jsonld",
-      "https://w3id.org/security/suites/ed25519-2020/v1"
+      "https://www.w3.org/2018/credentials/v1"
     ],
     id: "http://example.com/credentials/3527",
     type: [
@@ -52,20 +53,23 @@ const unsignedCredential = {
 
 // create the keypair to use when signing
 const controller = 'https://example.com/issuers/876543';
-const keyPair = await Ed25519VerificationKey2020.from({
-  type: 'Ed25519VerificationKey2020',
+const keyPair = await Ed25519Multikey.from({
+  '@context': 'https://w3id.org/security/multikey/v1',
+  type: 'Multikey',
   controller,
   id: controller + '#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
   publicKeyMultibase: 'z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
-  privateKeyMultibase: 'zrv2bqTbNwCTsRrHFcJCPjVAduh4Ezcnoq1A3ZxH1GWTNkxipLVuaAoMFmze2gFN9oNXfJjufxSHWVZzsJiUsMHFMcx'
+  secretKeyMultibase: 'zrv2bqTbNwCTsRrHFcJCPjVAduh4Ezcnoq1A3ZxH1GWTNkxipLVuaAoMFmze2gFN9oNXfJjufxSHWVZzsJiUsMHFMcx'
 });
 
-const suite = new Ed25519Signature2020({key: keyPair});
+const suite = new DataIntegrityProof({
+  signer: keyPair.signer(), cryptosuite: eddsa2022CryptoSuite
+});
 suite.date = '2010-01-01T19:23:24Z';
 
 const loader = securityLoader();
 loader.addStatic(
-  ed25519Context2020.CONTEXT_URL, ed25519Context2020.contexts.get(ed25519Context2020.constants.CONTEXT_URL)
+  dataIntegrity.CONTEXT_URL, dataIntegrity.CONTEXT
 );
 loader.addStatic(
   "https://purl.imsglobal.org/spec/ob/v3p0/context/ob_v3p0.jsonld", context
