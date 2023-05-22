@@ -8,6 +8,7 @@
     "@digitalbazaar/data-integrity-context": "^1.0.0",
     "@digitalbazaar/eddsa-2022-cryptosuite": "^1.0.0",
     "@digitalbazaar/security-document-loader": "^2.0.0",
+    "@digitalbazaar/vc": "^6.0.1",
     "jsonld-signatures": "^11.2.1"
   },
   "type": "module"
