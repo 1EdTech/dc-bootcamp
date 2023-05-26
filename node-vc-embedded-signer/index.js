@@ -9,6 +9,8 @@ import ed25519Context2020 from 'ed25519-signature-2020-context';
 
 import contexts   from './context.js';
 
+import { verifyCredential } from '@digitalbazaar/vc';
+
 // create the unsigned credential
 const unsignedCredential = {
   "@context": [
@@ -23,7 +25,7 @@ const unsignedCredential = {
     "AchievementCredential"
   ],
   "issuer": {
-    "id": "did:web:dc.1edtech.org:wellspring2022:wellspring-portal:org:da1e96e9-afcc-4eed-b9a2-2ddf7353214c",
+    "id": "https://example.com/issuers/876543",
     "type": "Profile",
     "address": {
       "type": "Address",
@@ -49,7 +51,7 @@ const unsignedCredential = {
       "name": "Achievement 1"
     },
     "source": {
-      "id": "did:web:dc.1edtech.org:wellspring2022:wellspring-portal:org:da1e96e9-afcc-4eed-b9a2-2ddf7353214c",
+      "id": "http://",
       "type": "Profile",
       "address": {
         "type": "Address",
@@ -57,20 +59,11 @@ const unsignedCredential = {
       },
       "name": "1EdTech Testing"
     }
-  },
-  "credentialStatus": {
-    "id": "https://dc.1edtech.org/wellspring2022/wellspring-portal/api/revocations/da1e96e9-afcc-4eed-b9a2-2ddf7353214c",
-    "type": "1EdTechRevocationList"
-  },
-  "refreshService": {
-    "id": "https://dc.1edtech.org/wellspring2022/wellspring-portal/api/refresh/54418d3f-ec01-4652-800a-861c890a51a1",
-    "type": "1EdTechCredentialRefresh"
   }
 };
 
 // create the keypair to use when signing
-//const controller = 'https://example.com/issuers/876543';
-const controller = 'did:web:dc.1edtech.org:wellspring2022:wellspring-portal:org:da1e96e9-afcc-4eed-b9a2-2ddf7353214c';
+const controller = 'https://example.com/issuers/876543';
 const keyPair = await Ed25519VerificationKey2020.from({
   type: 'Ed25519VerificationKey2020',
   controller,
@@ -95,7 +88,28 @@ loader.addStatic(
 loader.addStatic(
   "https://purl.imsglobal.org/spec/ob/v3p0/extensions.json", contexts["https://purl.imsglobal.org/spec/ob/v3p0/extensions.json"]
 );
+loader.addStatic(
+  controller + '#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
+  {
+    "@context": "https://w3id.org/security/suites/ed25519-2020/v1",
+    "type": "Ed25519VerificationKey2020",
+    controller,
+    id: controller + '#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
+    publicKeyMultibase: 'z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
+  }
+);
+loader.addStatic(
+  controller, {
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/security/suites/ed25519-2020/v1"
+  ],
+  "id": controller,
+  "assertionMethod": [
+    controller + '#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi'
 
+  ]
+});
 const documentLoader = loader.build();
 
 
@@ -106,3 +120,45 @@ const signedCredential = await jsigs.sign(unsignedCredential, {
 });
 
 console.log(JSON.stringify(signedCredential, null, 2));
+
+// verify the signed credential
+const anotherCredential = {
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.1.json",
+    "https://w3id.org/security/suites/ed25519-2020/v1"
+  ],
+  "type": ["VerifiableCredential", "AchievementCredential"],
+  "id": "http://www.1edtech.org/ob/1",
+  "issuanceDate": "2022-11-27T00:00:00Z",
+  "credentialSubject": {
+    "type": "AchievementSubject",
+    "id": "did:1edtech:1",
+    "achievement": {
+      "id": "did:1edtech:achievement:1",
+      "type": ["Achievement"],
+      "criteria": { "narrative": "some narrative" },
+      "description": "some description",
+      "name": "some name"
+    }
+  },
+  "name": "Some name",
+  "issuer": { "id": "http://www.1edtech.org", "type": ["Profile"] },
+  "proof": {
+    "type": "Ed25519Signature2020",
+    "created": "2023-05-26T13:33:55Z",
+    "proofPurpose": "assertionMethod",
+    "verificationMethod": "https://example.com/issuers/876543#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi",
+    "proofValue": "z5aJQRukw82fPnuSVn3RnD5PWi1k76GRQvu1d69ATZH1ruZULFiq3erPJWT6HkDW5sBDMnHopMj9e6gKHn3GNexHu"
+  }
+}
+
+const verSuite = new Ed25519Signature2020();
+
+const verified = await verifyCredential({
+  credential: signedCredential,
+  documentLoader: documentLoader,
+  suite: [verSuite]
+})
+
+console.log(verified);
