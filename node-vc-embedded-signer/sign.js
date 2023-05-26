@@ -10,46 +10,11 @@ import dataIntegrity from '@digitalbazaar/data-integrity-context';
 import { verifyCredential } from '@digitalbazaar/vc';
 
 import context   from './context.js';
+import context301   from './context-3.0.1.js';
 
-// create the unsigned credential
-const unsignedCredential = {
-    '@context': [
-      "https://www.w3.org/2018/credentials/v1",
-      "https://purl.imsglobal.org/spec/ob/v3p0/context/ob_v3p0.jsonld"
-    ],
-    id: "http://example.com/credentials/3527",
-    type: [
-      "VerifiableCredential",
-      "OpenBadgeCredential"
-    ],
-    issuer: {
-      id: "https://example.com/issuers/876543",
-      type: [
-        "Profile"
-      ],
-      url: "https://www.imsglobal.org",
-      name: "Example Corp"
-    },
-    issuanceDate: "2010-01-01T00:00:00Z",
-    name: "Teamwork Badge",
-    credentialSubject: {
-      id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
-      type: [
-        "AchievementSubject"
-      ],
-      achievement: {
-        id: "https://example.com/achievements/21st-century-skills/teamwork",
-        type: [
-          "Achievement"
-        ],
-        criteria: {
-          narrative: "Team members are nominated for this badge by their peers and recognized upon review by Example Corp management."
-        },
-        description: "This badge recognizes the development of the capacity to collaborate within a group environment.",
-        name: "Teamwork"
-      }
-    }
-  };
+// load credential to sign
+import { unsignedCredential } from './payloads.js';
+
 
 // create the keypair to use when signing
 const controller = 'https://example.com/issuers/876543';
@@ -73,6 +38,9 @@ loader.addStatic(
 );
 loader.addStatic(
   "https://purl.imsglobal.org/spec/ob/v3p0/context/ob_v3p0.jsonld", context
+);
+loader.addStatic(
+  "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.1.json", context301
 )
 loader.addStatic(
   controller + '#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
@@ -98,7 +66,6 @@ loader.addStatic(
 });
 
 const documentLoader = loader.build();
-
 
 const signedCredential = await jsigs.sign(unsignedCredential, {
   suite,
