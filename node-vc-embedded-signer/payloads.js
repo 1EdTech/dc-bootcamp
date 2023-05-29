@@ -35,32 +35,48 @@ export const unsignedCredential = {
 export const signedCredential = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.1.json",
+    "https://purl.imsglobal.org/spec/ob/v3p0/context/ob_v3p0.jsonld",
     "https://w3id.org/security/data-integrity/v1"
   ],
-  "type": ["VerifiableCredential", "AchievementCredential"],
-  "id": "http://www.1edtech.org/ob/1",
-  "issuanceDate": "2022-11-27T00:00:00Z",
+  "id": "http://example.com/credentials/3527",
+  "type": [
+    "VerifiableCredential",
+    "OpenBadgeCredential"
+  ],
+  "issuer": {
+    "id": "https://example.com/issuers/876543",
+    "type": [
+      "Profile"
+    ],
+    "url": "https://www.imsglobal.org",
+    "name": "Example Corp"
+  },
+  "issuanceDate": "2010-01-01T00:00:00Z",
+  "name": "Teamwork Badge",
   "credentialSubject": {
-    "type": "AchievementSubject",
-    "id": "did:1edtech:1",
+    "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+    "type": [
+      "AchievementSubject"
+    ],
     "achievement": {
-      "id": "did:1edtech:achievement:1",
-      "type": ["Achievement"],
-      "criteria": { "narrative": "some narrative" },
-      "description": "some description",
-      "name": "some name"
+      "id": "https://example.com/achievements/21st-century-skills/teamwork",
+      "type": [
+        "Achievement"
+      ],
+      "criteria": {
+        "narrative": "Team members are nominated for this badge by their peers and recognized upon review by Example Corp management."
+      },
+      "description": "This badge recognizes the development of the capacity to collaborate within a group environment.",
+      "name": "Teamwork"
     }
   },
-  "name": "Some name",
-  "issuer": { "id": "http://www.1edtech.org", "type": ["Profile"] },
   "proof": {
     "type": "DataIntegrityProof",
-    "created": "2023-05-26T13:02:03Z",
-    "proofPurpose": "assertionMethod",
+    "created": "2010-01-01T19:23:24Z",
     "verificationMethod": "https://example.com/issuers/876543#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi",
     "cryptosuite": "eddsa-2022",
-    "proofValue": "z3X6AszAThDeojjCg3Ys9TVgaJ6FZj1Q15N7Vn1igS2J9VKkDZNDugdHaoABz4NujYg5oHUqZgGmy9Lv7f42eXPsy"
+    "proofPurpose": "assertionMethod",
+    "proofValue": "z4qak22wvg7qwFSZtUdWbRUd7wCjU2VKKXU7NPuugBNYmeB6hHgdqUxChGxS33DUuUQmfgsjhdPkpfgg6zH9HzHdv"
   }
 }
 
