@@ -25,6 +25,7 @@ loader.addStatic(
 )
 
 // create the keypair to use when dereferencing verification method
+// const controller = 'http://www.1edtech.org';
 const controller = 'https://example.com/issuers/876543';
 
 loader.addStatic(
@@ -52,10 +53,7 @@ loader.addStatic(
 const documentLoader = loader.build();
 
 // verification
-const verSuite = new DataIntegrityProof({
-  controller,
-  cryptosuite: eddsa2022CryptoSuite
-});
+const verSuite = new DataIntegrityProof({cryptosuite: eddsa2022CryptoSuite});
 
 const verified = await verifyCredential({
   credential: signedCredential,

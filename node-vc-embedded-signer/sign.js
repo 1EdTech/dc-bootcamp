@@ -17,7 +17,9 @@ import { unsignedCredential } from './payloads.js';
 
 
 // create the keypair to use when signing
+//const controller = 'http://www.1edtech.org';
 const controller = 'https://example.com/issuers/876543';
+
 const keyPair = await Ed25519Multikey.from({
   '@context': 'https://w3id.org/security/multikey/v1',
   type: 'Multikey',
@@ -77,10 +79,7 @@ console.log(JSON.stringify(signedCredential, null, 2));
 
 // verification
 
-const verSuite = new DataIntegrityProof({
-  controller,
-  cryptosuite: eddsa2022CryptoSuite
-});
+const verSuite = new DataIntegrityProof({cryptosuite: eddsa2022CryptoSuite});
 
 const verified = await verifyCredential({
   credential: signedCredential,
