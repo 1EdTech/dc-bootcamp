@@ -143,20 +143,20 @@ const anotherCredential = {
     }
   },
   "name": "Some name",
-  "issuer": { "id": "http://www.1edtech.org", "type": ["Profile"] },
+  "issuer": { "id": "https://example.com/issuers/876543", "type": ["Profile"] },
   "proof": {
     "type": "Ed25519Signature2020",
-    "created": "2023-05-26T13:33:55Z",
+    "created": "2023-05-29T07:42:45Z",
     "proofPurpose": "assertionMethod",
     "verificationMethod": "https://example.com/issuers/876543#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi",
-    "proofValue": "z5aJQRukw82fPnuSVn3RnD5PWi1k76GRQvu1d69ATZH1ruZULFiq3erPJWT6HkDW5sBDMnHopMj9e6gKHn3GNexHu"
+    "proofValue": "z5pyD6cLDHfLdqGtPBwkp3RDxHtV9KL3xEHK5gTU6SrjdEJJptXZgpa2hSQzE4g6ArUTbtfV9mLcumxu3xiwKux3K"
   }
 }
 
 const verSuite = new Ed25519Signature2020();
 
 const verified = await verifyCredential({
-  credential: signedCredential,
+  credential: anotherCredential,
   documentLoader: documentLoader,
   suite: [verSuite]
 })
