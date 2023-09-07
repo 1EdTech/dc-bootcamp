@@ -3,8 +3,6 @@ const {purposes: {AssertionProofPurpose}} = jsigs;
 import {securityLoader} from '@digitalbazaar/security-document-loader';
 import * as Ed25519Multikey from '@digitalbazaar/ed25519-multikey';
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
-import {cryptosuite as eddsa2022CryptoSuite} from
-  './eddsa-rfd-2022';
 import dataIntegrity from '@digitalbazaar/data-integrity-context';
 
 import { verifyCredential } from '@digitalbazaar/vc';
@@ -14,11 +12,12 @@ import context301   from './context-3.0.1.js';
 import context302   from './contexts/context-3.0.2.js';
 import contextClr   from './contexts/clrv2p0.js';
 import contextExtensions   from './contexts/extensions.js';
+import {cryptosuite as eddsa2022CryptoSuite} from './eddsa-rfd-2022.js';
 
 // load credential to sign
 import { unsignedCredential, unsignedClr } from './payloads.js';
 
-const credentialToSign = unsignedClr;
+const credentialToSign = unsignedCredential;
 
 // create the keypair to use when signing
 //const controller = 'http://www.1edtech.org';
@@ -90,7 +89,7 @@ const documentLoader = loader.build();
 console.log('\nUnsigned credential')
 console.log(JSON.stringify(credentialToSign, null, 2));
 
-const signedCredential = await jsigs.sign(unsignedClr, {
+const signedCredential = await jsigs.sign(credentialToSign, {
   suite,
   purpose: new AssertionProofPurpose(),
   documentLoader
