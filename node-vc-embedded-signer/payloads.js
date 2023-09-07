@@ -102,16 +102,14 @@ export const unsignedClr = {
             "type": "1EdTechJsonSchemaValidator2019"
           }
         ],
-        "proof": [
-          {
-            "type": "DataIntegrityProof",
-            "created": "2023-07-25T13:17:33Z",
-            "verificationMethod": "https://example.edu/issuers/565049#z6MkvcpMB3ZXmLgSqDVtmcijHzpVikJFyfoSmCQBFe7j3vtD",
-            "cryptosuite": "eddsa-2022",
-            "proofPurpose": "assertionMethod",
-            "proofValue": "z4qj6AFEgstmd5b5brWYE7arn92snmPc8GTYEc3knDZSKGopHmXg71E27WknrazUnVa3nVfqugB6Q2sFbsjkgZngF"
-          }
-        ]
+        "proof": {
+          "type": "DataIntegrityProof",
+          "created": "2010-01-01T19:23:24Z",
+          "verificationMethod": "https://example.edu/issuers/565049#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi",
+          "cryptosuite": "eddsa-rdfc-2022",
+          "proofPurpose": "assertionMethod",
+          "proofValue": "z2CGNmCgEmN68CWch6Kgg4vnjRDE896jnUqfQtJoG11qxC8ntxUPCQaGckoHG7BXW7KWZyUiSs5EkKX3gEiGYKrz"
+        }
       }
     ],
     "achievement": [
