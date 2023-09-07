@@ -8,7 +8,7 @@ export const unsignedCredential = {
   id: "http://example.com/credentials/3527",
   type: ["VerifiableCredential", "OpenBadgeCredential"],
   issuer: {
-    id: "https://example.com/issuers/876543",
+    id: "https://example.edu/issuers/565049",
     type: ["Profile"],
     url: "https://www.imsglobal.org",
     name: "Example Corp",
