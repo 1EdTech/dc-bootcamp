@@ -14,23 +14,21 @@ import contextClr   from './contexts/clrv2p0.js';
 import contextExtensions   from './contexts/extensions.js';
 import {cryptosuite as eddsa2022CryptoSuite} from './eddsa-rfd-2022.js';
 
+import { kpi } from './kpi-1edtech.js';
+
 // load credential to sign
 import { unsignedCredential, unsignedClr } from './payloads.js';
 
 const credentialToSign = unsignedCredential;
 
 // create the keypair to use when signing
-//const controller = 'http://www.1edtech.org';
-// const controller = 'https://example.com/issuers/876543';
-const controller = 'https://example.edu/issuers/565049';
-
 const keyPair = await Ed25519Multikey.from({
   '@context': 'https://w3id.org/security/multikey/v1',
   type: 'Multikey',
-  controller,
-  id: controller + '#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
-  publicKeyMultibase: 'z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
-  secretKeyMultibase: 'zrv2bqTbNwCTsRrHFcJCPjVAduh4Ezcnoq1A3ZxH1GWTNkxipLVuaAoMFmze2gFN9oNXfJjufxSHWVZzsJiUsMHFMcx'
+  controller : kpi.controller,
+  id: `${kpi.controller}#${kpi.publicKeyMultibase}`,
+  publicKeyMultibase: kpi.publicKeyMultibase,
+  secretKeyMultibase: kpi.secretKeyMultibase
 });
 
 console.log('Using multikey:', keyPair);
@@ -62,25 +60,25 @@ loader.addStatic(
   "https://purl.imsglobal.org/spec/ob/v3p0/extensions.json", contextExtensions
 )
 loader.addStatic(
-  controller + '#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
+  keyPair.id,
   {
     "@context": "https://w3id.org/security/multikey/v1",
     type: 'Multikey',
-    controller,
-    id: controller + '#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
-    publicKeyMultibase: 'z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
+    controller: keyPair.controller,
+    id: keyPair.id,
+    publicKeyMultibase: keyPair.publicKeyMultibase,
   }
 );
 loader.addStatic(
-  controller, {
+  keyPair.controller,
+  {
   "@context": [
     "https://www.w3.org/ns/did/v1",
     "https://w3id.org/security/multikey/v1"
   ],
-  "id": controller,
+  "id": keyPair.controller,
   "assertionMethod": [
-    controller + '#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi'
-
+    keyPair.id
   ]
 });
 
@@ -105,6 +103,7 @@ const verSuite = new DataIntegrityProof({cryptosuite: eddsa2022CryptoSuite});
 const verified = await verifyCredential({
   credential: signedCredential,
   documentLoader: documentLoader,
+  checkStatus: () => { return {verified: true}}, // simple status check
   suite: [verSuite]
 })
 
