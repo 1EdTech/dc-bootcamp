@@ -17,6 +17,7 @@ import customContexts from './contexts.js';
 
 // key pair information
 import { kpi } from './kpi/kpi-1edtech.js';
+import { multikeyDocumentUrl, multikeyDocument, controllerDocumentUrl, controllerDocument } from './verification-documents.js';
 
 // load credential to sign
 import { unsignedCredential, unsignedClr } from './payloads.js';
@@ -44,27 +45,15 @@ suite.date = '2010-01-01T19:23:24Z';
 
 const staticDocuments = new Map();
 staticDocuments.set(
-  keyPair.id,
-  {
-    "@context": "https://w3id.org/security/multikey/v1",
-    type: 'Multikey',
-    controller: keyPair.controller,
-    id: keyPair.id,
-    publicKeyMultibase: keyPair.publicKeyMultibase,
-  }
+  multikeyDocumentUrl(kpi),
+  multikeyDocument(kpi)
 );
+
 staticDocuments.set(
-  keyPair.controller,
-  {
-  "@context": [
-    "https://www.w3.org/ns/did/v1",
-    "https://w3id.org/security/multikey/v1"
-  ],
-  "id": keyPair.controller,
-  "assertionMethod": [
-    keyPair.id
-  ]
-});
+  controllerDocumentUrl(kpi),
+  controllerDocument(kpi)
+);
+
 
 // document loader
 const documentLoader = extendContextLoader(async url => {
