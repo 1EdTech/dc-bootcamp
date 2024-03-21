@@ -1,20 +1,22 @@
-import jsigs from 'jsonld-signatures';
-const {purposes: {AssertionProofPurpose}} = jsigs;
-import {securityLoader} from '@digitalbazaar/security-document-loader';
-import * as Ed25519Multikey from '@digitalbazaar/ed25519-multikey';
+import { defaultDocumentLoader, verifyCredential, issue } from '@digitalbazaar/vc';
+
+// data integrity proof
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
-import dataIntegrity from '@digitalbazaar/data-integrity-context';
+import jsigs from 'jsonld-signatures';
+const {purposes: {AssertionProofPurpose}, extendContextLoader} = jsigs;
 
-import { verifyCredential } from '@digitalbazaar/vc';
+// key and cryptosuite
+import * as Ed25519Multikey from '@digitalbazaar/ed25519-multikey';
+import {cryptosuite as eddsaRdfc2022CryptoSuite} from
+'@digitalbazaar/eddsa-rdfc-2022-cryptosuite';
 
-import context   from './context.js';
-import context301   from './context-3.0.1.js';
-import context302   from './contexts/context-3.0.2.js';
-import contextClr   from './contexts/clrv2p0.js';
-import contextExtensions   from './contexts/extensions.js';
-import {cryptosuite as eddsa2022CryptoSuite} from './eddsa-rfd-2022.js';
+// contexts
+import * as vcContexts from '@digitalbazaar/credentials-v2-context';
+import dataIntegrityContexts from '@digitalbazaar/data-integrity-context';
+import customContexts from './contexts.js';
 
-import { kpi } from './kpi-1edtech.js';
+// key pair information
+import { kpi } from './kpi/kpi-1edtech.js';
 
 // load credential to sign
 import { unsignedCredential, unsignedClr } from './payloads.js';
@@ -36,30 +38,12 @@ console.log('Using public key (hex):', Buffer.from(keyPair.publicKey).toString('
 console.log('Using secret key (hex):', Buffer.from(keyPair.secretKey).toString('hex'));
 
 const suite = new DataIntegrityProof({
-  signer: keyPair.signer(), cryptosuite: eddsa2022CryptoSuite
+  signer: keyPair.signer(), cryptosuite: eddsaRdfc2022CryptoSuite
 });
 suite.date = '2010-01-01T19:23:24Z';
 
-const loader = securityLoader();
-loader.addStatic(
-  dataIntegrity.CONTEXT_URL, dataIntegrity.CONTEXT
-);
-loader.addStatic(
-  "https://purl.imsglobal.org/spec/ob/v3p0/context/ob_v3p0.jsonld", context
-);
-loader.addStatic(
-  "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.1.json", context301
-)
-loader.addStatic(
-  "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.2.json", context302
-)
-loader.addStatic(
-  "https://purl.imsglobal.org/spec/clr/v2p0/context.json", contextClr
-)
-loader.addStatic(
-  "https://purl.imsglobal.org/spec/ob/v3p0/extensions.json", contextExtensions
-)
-loader.addStatic(
+const staticDocuments = new Map();
+staticDocuments.set(
   keyPair.id,
   {
     "@context": "https://w3id.org/security/multikey/v1",
@@ -69,7 +53,7 @@ loader.addStatic(
     publicKeyMultibase: keyPair.publicKeyMultibase,
   }
 );
-loader.addStatic(
+staticDocuments.set(
   keyPair.controller,
   {
   "@context": [
@@ -82,12 +66,36 @@ loader.addStatic(
   ]
 });
 
-const documentLoader = loader.build();
+// document loader
+const documentLoader = extendContextLoader(async url => {
+  const context = [vcContexts, dataIntegrityContexts, customContexts]
+    .map(d => d.contexts.get(url))
+    .find(c => c !== undefined);
+  if (context !== undefined) {
+    return {
+      contextUrl: null,
+      documentUrl: url,
+      document: context
+    };
+  }
+
+  if (staticDocuments.has(url)) {
+    return {
+      contextUrl: null,
+      documentUrl: url,
+      document: staticDocuments.get(url)
+    };
+  }
+
+  console.log("could not find document " + url)
+  return defaultDocumentLoader(url);
+});
 
 console.log('\nUnsigned credential')
 console.log(JSON.stringify(credentialToSign, null, 2));
 
-const signedCredential = await jsigs.sign(credentialToSign, {
+const signedCredential = await issue({
+  credential: credentialToSign,
   suite,
   purpose: new AssertionProofPurpose(),
   documentLoader
@@ -98,7 +106,7 @@ console.log(JSON.stringify(signedCredential, null, 2));
 
 // verification
 
-const verSuite = new DataIntegrityProof({cryptosuite: eddsa2022CryptoSuite});
+const verSuite = new DataIntegrityProof({cryptosuite: eddsaRdfc2022CryptoSuite});
 
 const verified = await verifyCredential({
   credential: signedCredential,
