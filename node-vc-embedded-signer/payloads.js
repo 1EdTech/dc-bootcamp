@@ -3,7 +3,7 @@
 export const unsignedCredential = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://purl.imsglobal.org/spec/ob/v3p0/context/ob_v3p0.jsonld",
+    "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.2.json"
   ],
   id: "http://example.com/credentials/3527",
   type: ["VerifiableCredential", "OpenBadgeCredential"],
