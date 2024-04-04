@@ -1,59 +1,65 @@
-import {securityLoader} from '@digitalbazaar/security-document-loader';
+// data integrity proof
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
-import {cryptosuite as eddsa2022CryptoSuite} from
-  '@digitalbazaar/eddsa-2022-cryptosuite';
-import dataIntegrity from '@digitalbazaar/data-integrity-context';
 
-import { verifyCredential } from '@digitalbazaar/vc';
+// key and cryptosuite
+import {cryptosuite as eddsaRdfc2022CryptoSuite} from
+'@digitalbazaar/eddsa-rdfc-2022-cryptosuite';
 
-import context   from './context.js';
-import context301   from './context-3.0.1.js';
+import { defaultDocumentLoader, verifyCredential } from '@digitalbazaar/vc';
+import jsigs from 'jsonld-signatures';
+const { extendContextLoader } = jsigs;
+
+// contexts
+import * as vcContexts from '@digitalbazaar/credentials-v2-context';
+import dataIntegrityContexts from '@digitalbazaar/data-integrity-context';
+import customContexts from './contexts.js';
+
+// key pair information to use when dereferencing verification method
+import { kpi } from './kpi/kpi-1edtech.js';
+import { multikeyDocumentUrl, multikeyDocument, controllerDocumentUrl, controllerDocument } from './verification-documents.js';
+
+const staticDocuments = new Map();
+
+staticDocuments.set(
+  multikeyDocumentUrl(kpi),
+  multikeyDocument(kpi)
+);
+
+staticDocuments.set(
+  controllerDocumentUrl(kpi),
+  controllerDocument(kpi)
+);
+
+// document loader
+const documentLoader = extendContextLoader(async url => {
+  const context = [vcContexts, dataIntegrityContexts, customContexts]
+    .map(d => d.contexts.get(url))
+    .find(c => c !== undefined);
+  if (context !== undefined) {
+    return {
+      contextUrl: null,
+      documentUrl: url,
+      document: context
+    };
+  }
+
+  if (staticDocuments.has(url)) {
+    return {
+      contextUrl: null,
+      documentUrl: url,
+      document: staticDocuments.get(url)
+    };
+  }
+
+  console.log("could not find document " + url)
+  return defaultDocumentLoader(url);
+});
 
 // load credential to verify
 import { signedCredential } from './payloads.js';
 
-
-const loader = securityLoader();
-loader.addStatic(
-  dataIntegrity.CONTEXT_URL, dataIntegrity.CONTEXT
-);
-loader.addStatic(
-  "https://purl.imsglobal.org/spec/ob/v3p0/context/ob_v3p0.jsonld", context
-);
-loader.addStatic(
-  "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.1.json", context301
-)
-
-// create the keypair to use when dereferencing verification method
-// const controller = 'http://www.1edtech.org';
-const controller = 'https://example.com/issuers/876543';
-
-loader.addStatic(
-  controller + '#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
-  {
-    "@context": "https://w3id.org/security/multikey/v1",
-    type: 'Multikey',
-    controller,
-    id: controller + '#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
-    publicKeyMultibase: 'z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi',
-  }
-);
-loader.addStatic(
-  controller, {
-  "@context": [
-    "https://www.w3.org/ns/did/v1",
-    "https://w3id.org/security/multikey/v1"
-  ],
-  "id": controller,
-  "assertionMethod": [
-    controller + '#z6MkjZRZv3aez3r18pB1RBFJR1kwUVJ5jHt92JmQwXbd5hwi'
-  ]
-});
-
-const documentLoader = loader.build();
-
 // verification
-const verSuite = new DataIntegrityProof({cryptosuite: eddsa2022CryptoSuite});
+const verSuite = new DataIntegrityProof({cryptosuite: eddsaRdfc2022CryptoSuite});
 
 const verified = await verifyCredential({
   credential: signedCredential,
