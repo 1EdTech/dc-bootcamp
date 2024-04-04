@@ -1,0 +1,10 @@
+{
+  "name": "node-vc-jwt-signer",
+  "version": "1.0.0",
+  "author": "xaracil@1edtech.org",
+  "private": true,
+  "dependencies": {
+    "jose": "^5.2.3"
+  },
+  "type": "module"
+}
