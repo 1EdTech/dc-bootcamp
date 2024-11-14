@@ -6,6 +6,7 @@
   "dependencies": {
     "@digitalbazaar/data-integrity": "^2.1.0",
     "@digitalbazaar/data-integrity-context": "^2.0.0",
+    "@digitalbazaar/ecdsa-sd-2023-cryptosuite": "^3.4.1",
     "@digitalbazaar/eddsa-rdfc-2022-cryptosuite": "^1.0.1",
     "@digitalbazaar/vc": "1edtech/vc-js#credentials-v2"
   },
