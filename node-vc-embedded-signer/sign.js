@@ -11,7 +11,8 @@ import {cryptosuite as eddsaRdfc2022CryptoSuite} from
 '@digitalbazaar/eddsa-rdfc-2022-cryptosuite';
 
 // contexts
-import * as vcContexts from '@digitalbazaar/credentials-v2-context';
+import * as vcContexts from '@digitalbazaar/credentials-context'
+
 import dataIntegrityContexts from '@digitalbazaar/data-integrity-context';
 import customContexts from './contexts.js';
 
