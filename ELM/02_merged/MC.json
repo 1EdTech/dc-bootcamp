@@ -925,7 +925,7 @@
           "name": "Communication, collaboration and creativity",
           "alignment": [
             {
-              "id": "Alignment",
+              "type": "Alignment",
               "targetCode": "326809fc-238d-40c2-881e-40042f7f2f0d",
               "targetName": "establish collaborative relations",
               "targetFramework": "ESCO",
@@ -933,7 +933,7 @@
               "targetUrl": "http://data.europa.eu/esco/skill/326809fc-238d-40c2-881e-40042f7f2f0d"
             },
             {
-              "id": "Alignment",
+              "type": "Alignment",
               "targetCode": "80f308e6-0e09-404a-80cd-ec5f50f6f304",
               "targetName": "communicate with target community",
               "targetFramework": "ESCO",
@@ -941,7 +941,7 @@
               "targetUrl": "http://data.europa.eu/esco/skill/80f308e6-0e09-404a-80cd-ec5f50f6f304"
             },
             {
-              "id": "Alignment",
+              "type": "Alignment",
               "targetCode": "ccdf3597-5c80-410f-896d-e1bdfa223de9",
               "targetName": "stimulate creativity in the team",
               "targetFramework": "ESCO",
@@ -949,7 +949,7 @@
               "targetUrl": "http://data.europa.eu/esco/skill/ccdf3597-5c80-410f-896d-e1bdfa223de9"
             },
             {
-              "id": "Alignment",
+              "type": "Alignment",
               "targetCode": "4f5c1208-62fd-4e5a-a51e-306c06947e11",
               "targetName": "manage findable accessible interoperable and reusable data",
               "targetFramework": "ESCO",
@@ -964,6 +964,7 @@
       ]
     },
     "result": {
+      "type": ["Result"],
       "value": "Pass"
     },
     "source": {
