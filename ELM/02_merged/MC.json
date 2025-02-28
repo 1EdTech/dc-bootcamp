@@ -808,7 +808,8 @@
           "@type": "xsd:duration"
       }
     },
-    "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.3.json"
+    "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.3.json",
+    "https://purl.imsglobal.org/spec/ob/v3p0/extensions.json"
   ],
   "type": [
     "VerifiableCredential",

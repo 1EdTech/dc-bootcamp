@@ -2,7 +2,8 @@
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "http://data.europa.eu/snb/model/context/edc-ap",
-    "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.3.json"
+    "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.3.json",
+    "https://purl.imsglobal.org/spec/ob/v3p0/extensions.json"
   ],
   "type": [
     "VerifiableCredential",
