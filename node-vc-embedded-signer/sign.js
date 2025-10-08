@@ -1,4 +1,4 @@
-import { defaultDocumentLoader, verifyCredential, issue } from '@digitalbazaar/vc';
+import { defaultDocumentLoader, issue } from '@digitalbazaar/vc';
 
 // data integrity proof
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
@@ -9,7 +9,7 @@ const {purposes: {AssertionProofPurpose}, extendContextLoader} = jsigs;
 import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
 import * as ecdsaSd2023Cryptosuite
   from '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
-const {createSignCryptosuite, createDiscloseCryptosuite} = ecdsaSd2023Cryptosuite;
+const {createSignCryptosuite, createDiscloseCryptosuite, createVerifyCryptosuite} = ecdsaSd2023Cryptosuite;
 
 // import * as Ed25519Multikey from '@digitalbazaar/ed25519-multikey';
 // import {cryptosuite as eddsaRdfc2022CryptoSuite} from
@@ -105,7 +105,7 @@ console.log(JSON.stringify(signedCredential, null, 2));
 // derived credential
 const derivedSuite = new DataIntegrityProof({
   cryptosuite: createDiscloseCryptosuite({
-    selectivePointers: ['/credentialSubject/id', '/credentialSubject/achievement/name']
+    selectivePointers: ['/issuer', '/validFrom', '/credentialSubject/id', '/credentialSubject/achievement']
   })
 });
 
@@ -122,13 +122,14 @@ console.log(JSON.stringify(derivedCredential, null, 2));
 
 // verification
 
-// const verSuite = new DataIntegrityProof({cryptosuite: eddsaRdfc2022CryptoSuite});
+const verificationSuite = new DataIntegrityProof({
+  cryptosuite: createVerifyCryptosuite()
+});
 
-// const verified = await verifyCredential({
-//   credential: signedCredential,
-//   documentLoader: documentLoader,
-//   checkStatus: () => { return {verified: true}}, // simple status check
-//   suite: [verSuite]
-// })
-
-// console.log(verified);
+// verify the derived credential
+const result = await jsigs.verify(derivedCredential, {
+  suite: verificationSuite,
+  purpose: new AssertionProofPurpose(),
+  documentLoader
+});
+console.log(result);

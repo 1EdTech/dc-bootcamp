@@ -1,13 +1,14 @@
-import { defaultDocumentLoader, verifyCredential } from '@digitalbazaar/vc';
+import { defaultDocumentLoader } from '@digitalbazaar/vc';
 
 // data integrity proof
 import {DataIntegrityProof} from '@digitalbazaar/data-integrity';
 import jsigs from 'jsonld-signatures';
-const {extendContextLoader} = jsigs;
+const {extendContextLoader, purposes: {AssertionProofPurpose}} = jsigs;
 
 // key and cryptosuite
-import {cryptosuite as eddsaRdfc2022CryptoSuite} from
-'@digitalbazaar/eddsa-rdfc-2022-cryptosuite';
+import * as ecdsaSd2023Cryptosuite
+  from '@digitalbazaar/ecdsa-sd-2023-cryptosuite';
+const {createVerifyCryptosuite} = ecdsaSd2023Cryptosuite;
 
 // contexts
 import * as vcContexts from '@digitalbazaar/credentials-context'
@@ -59,14 +60,14 @@ const documentLoader = extendContextLoader(async url => {
 // load credential to verify
 import { signedCredential } from './payloads.js';
 
-// verification
-const verSuite = new DataIntegrityProof({cryptosuite: eddsaRdfc2022CryptoSuite});
+const verificationSuite = new DataIntegrityProof({
+  cryptosuite: createVerifyCryptosuite()
+});
 
-const verified = await verifyCredential({
-  credential: signedCredential,
-  documentLoader: documentLoader,
-  suite: [verSuite],
-  checkStatus: () => { return {verified: true}}
-})
-
-console.log(verified);
+// verify the signed credential
+const result = await jsigs.verify(signedCredential, {
+  suite: verificationSuite,
+  purpose: new AssertionProofPurpose(),
+  documentLoader
+});
+console.log(result);
