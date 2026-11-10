@@ -880,6 +880,12 @@
         "identityType": "nationalIdentityNumber"
       }
     ],
+    "elm:identifier" : [ {
+        "id" : "urn:epass:identifier:4",
+        "type" : "Identifier",
+        "notation" : "87654321",
+        "schemeName" : "Student Card ID"
+    } ],
     "achievement": {
       "id": "urn:epass:learningAchievement:1",
       "type": ["Achievement"],
